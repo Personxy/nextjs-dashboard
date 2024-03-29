@@ -1,13 +1,16 @@
 import type { NextAuthConfig } from 'next-auth';
-
+import GithubProvider from 'next-auth/providers/github';
 export const authConfig = {
   pages: {
     signIn: '/login',
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
+      console.log('authorized callback', auth, nextUrl);
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      console.log('isLoggedIn', isLoggedIn);
+      console.log('isOnDashboard', isOnDashboard);
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
@@ -17,5 +20,10 @@ export const authConfig = {
       return true;
     },
   },
-  providers: [], // Add providers with an empty array for now
+  providers: [
+    GithubProvider({
+      clientId: `${process.env.GITHUB_ID}`,
+      clientSecret: `${process.env.GITHUB_SECRET}`,
+    }),
+  ], // Add providers with an empty array for now
 } satisfies NextAuthConfig;

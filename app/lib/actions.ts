@@ -116,12 +116,17 @@ export async function deleteInvoice(id: string) {
     return { message: 'Database Error: Failed to Delete Invoice.' };
   }
 }
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
   try {
-    await signIn('credentials', formData);
+    console.log('formData: ', formData.get('provider'));
+    const providerType =
+      formData.get('provider') === null ? undefined : formData.get('provider');
+
+    await signIn(providerType as string, formData);
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
